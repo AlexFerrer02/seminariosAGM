@@ -68,7 +68,7 @@ function init()
 
 function loadScene()
 {
-    const material = new THREE.MeshBasicMaterial({color:'yellow',wireframe:true});
+    const material = new THREE.MeshBasicMaterial({color:'yellow',wireframe:false});
 
     /*******************
     * TO DO: Misma escena que en la practica anterior
