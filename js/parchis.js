@@ -32,7 +32,7 @@ function init() {
     document.getElementById('container').appendChild(renderer.domElement);
     renderer.antialias = true;
     renderer.shadowMap.enabled = true;
-    renderer.setClearColor(0x8FBCD4); // Color de fondo azul claro
+    renderer.setClearColor(0x8FBCD4);
 
     // Escena
     scene = new THREE.Scene();
@@ -46,7 +46,7 @@ function init() {
     cameraControls.target.set(0, 0, 0);
     cameraControls.minDistance = 10;
     cameraControls.maxDistance = 50;
-    cameraControls.maxPolarAngle = Math.PI/2 - 0.1; // Limitar rotación para no ver por debajo del tablero
+    cameraControls.maxPolarAngle = Math.PI/2 - 0.1; // Rotación limitada para no ver por debajo del tablero
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     // Luces
@@ -62,7 +62,7 @@ function setupLights() {
     const ambiental = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambiental);
     
-    // Luz direccional (como el sol)
+    // Luz direccional
     const direccional = new THREE.DirectionalLight(0xFFFFFF, 0.5);
     direccional.position.set(-10, 15, -10);
     direccional.castShadow = true;
@@ -226,7 +226,7 @@ function crearDado() {
     const loader = new THREE.TextureLoader();
     const path = "./images/";
     
-    // Crear material para cada cara (normalmente serían imágenes de puntos 1-6)
+    // Crear material para cada cara
     const materiales = [
         new THREE.MeshLambertMaterial({ color: 0xFFFFFF }), // Derecha
         new THREE.MeshLambertMaterial({ color: 0xFFFFFF }), // Izquierda
@@ -355,7 +355,6 @@ function loadGUI() {
     const opciones = gui.addFolder("Opciones");
     opciones.add(effectController, "mostrarEjes").name("Mostrar ejes").onChange(toggleEjes);
     opciones.add(effectController, "wireframe").name("Modo Wireframe").onChange(toggleWireframe);
-    opciones.add(effectController, "sombras").name("Activar sombras").onChange(toggleShadows);
     opciones.add(effectController, "velocidadAnimacion", 100, 2000, 100).name("Velocidad anim. (ms)");
 }
 
@@ -381,19 +380,6 @@ function toggleWireframe() {
     });
 }
 
-function toggleShadows() {
-    // Activar/desactivar sombras
-    scene.traverse(objeto => {
-        if (objeto.isMesh) {
-            objeto.castShadow = effectController.sombras;
-            objeto.receiveShadow = effectController.sombras;
-        }
-    });
-    
-    // Actualizar renderer
-    renderer.shadowMap.enabled = effectController.sombras;
-}
-
 function lanzarDado() {
     // Detener cualquier animación previa
     TWEEN.removeAll();
@@ -415,7 +401,7 @@ function lanzarDado() {
     // Calcular la rotación final para que quede con el valor correcto hacia arriba
     let rotacionFinal = {x: 0, y: 0, z: 0};
     
-    // Definir rotaciones para cada valor del dado (esto es aproximado y puedes ajustarlo)
+    // Definir rotaciones para cada valor del dado
     switch(valorDado) {
         case 1:
             rotacionFinal.x = Math.PI; // 1 arriba
@@ -577,10 +563,7 @@ function animarDeseleccionFicha(ficha) {
 }
 
 function moverFichaAPunto(ficha, punto) {
-    // Guardar la posición antes de mover la ficha
-    const posicionAnterior = ficha.position.clone();
-    
-    // Animar el movimiento al punto exacto (manteniendo la altura y)
+    // Animar el movimiento al punto exacto
     new TWEEN.Tween(ficha.position)
         .to({
             x: punto.x,
@@ -591,12 +574,12 @@ function moverFichaAPunto(ficha, punto) {
         .start()
         .onComplete(() => {
             // Después de mover la ficha, verificar si hay otras fichas en ese punto
-            verificarColisionesDirectas(ficha, punto);
+            verificarColisionesDirectas(ficha);
         });
 }
 
 // Función para verificar colisiones con otras fichas
-function verificarColisionesDirectas(ficha, punto) {
+function verificarColisionesDirectas(ficha) {
     // Color de la ficha que se está moviendo
     const colorFicha = ficha.userData.color;
     
@@ -614,7 +597,6 @@ function verificarColisionesDirectas(ficha, punto) {
             
             // Si están muy cerca y son de diferente color, enviar la otra ficha a su inicio
             if (distancia < umbralColision && otraFicha.userData.color !== colorFicha) {
-                console.log("¡Ficha comida!");
                 enviarFichaAInicio(otraFicha);
             }
         }
