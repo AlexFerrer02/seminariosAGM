@@ -491,7 +491,6 @@ function onClick(event) {
                 fichaSeleccionada = object;
                 // Destacar la ficha seleccionada
                 animarSeleccionFicha(fichaSeleccionada);
-                console.log("Ficha seleccionada. Haz clic en cualquier lugar para moverla.");
                 
                 // Desactivar temporalmente los controles de cámara mientras se selecciona una ficha
                 cameraControls.enabled = false;
@@ -500,7 +499,6 @@ function onClick(event) {
                 animarDeseleccionFicha(fichaSeleccionada);
                 fichaSeleccionada = object;
                 animarSeleccionFicha(fichaSeleccionada);
-                console.log("Nueva ficha seleccionada. Haz clic en cualquier lugar para moverla.");
             }
             return;
         }
